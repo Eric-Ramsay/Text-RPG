@@ -1,0 +1,78 @@
+tC = 'e'; bC = 'e'; lC = 'e'; rC = 'e'; //Initialize direction characters to 'e' -> empty
+				if (i / 3 > 0) { //N
+					tC = chunks[(i / 3) - 1][(j / 3)];
+				}
+				if (i / 3 < chunks.size()-1) { //S
+					bC = chunks[(i / 3) + 1][(j / 3)];
+				}
+				if (j / 3 > 0) { //W
+					lC = chunks[(i / 3)][(j / 3) - 1];
+				}
+				if (j / 3 < chunks[(i / 3)].size()-1) { //E
+					rC = chunks[(i / 3)][(j / 3) + 1];
+				}
+				//arr = { chunks[i / 3][j / 3], tC, bC, lC, rC };
+				if (i % 3 == 1 || j % 3 == 1) { //Assign in a + shape
+					if (i % 3 == 1) {
+						if (j % 3 == 1) {
+							map[i][j].water[HERE] = chunks[i / 3][j / 3];
+						}
+						else if (j % 3 == 1) {
+							map[i][j].water[HERE] = rC;
+						}
+						else if (j % 3 == -1) {
+							map[i][j].water[HERE] = lC;
+						}
+					}
+					if (j % 3 == 1) {
+						if (i % 3 == -1) {
+							map[i][j].water[HERE] = tC;
+						}
+						else if (i % 3 == 1) {
+							map[i][j].water[HERE] = bC;
+						}
+					}
+					map[i][j].water[NORTH] = tC;
+					map[i][j].water[SOUTH] = bC;
+					map[i][j].water[WEST] = lC;
+					map[i][j].water[EAST] = rC;
+				}
+				else if (i % 3 == 0) { //Otherwise deal with the corners
+					if (j % 3 == 0) { //top left
+						if (tC != 'e') {
+							map[i][j].water[EAST] = chunks[i / 3][j / 3];
+						}
+						if (lC != 'e') {
+							map[i][j].water[SOUTH] = chunks[i / 3][j / 3];
+						}
+					}
+					else { //top right
+						if (tC != 'e') {
+							map[i][j].water[WEST] = chunks[i / 3][j / 3];
+						}
+						if (rC != 'e') {
+							map[i][j].water[SOUTH] = chunks[i / 3][j / 3];
+						}
+					}
+				}
+				else {
+					if (j % 3 == 0) { //bot left
+						if (bC != 'e') {
+							map[i][j].water[EAST] = chunks[i / 3][j / 3];
+						}
+						if (lC != 'e') {
+							map[i][j].water[NORTH] = chunks[i / 3][j / 3];
+						}
+					}
+					else { //bot right
+						if (bC != 'e') {
+							map[i][j].water[WEST] = chunks[i / 3][j / 3];
+						}
+						if (rC != 'e') {
+							map[i][j].water[NORTH] = chunks[i / 3][j / 3];
+						}
+					}
+				}
+
+
+				
