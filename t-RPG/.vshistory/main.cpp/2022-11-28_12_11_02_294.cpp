@@ -256,8 +256,8 @@ bool OnUserUpdate(float fElapsedTime) override
 		if (GetKey(olc::Key::L).bPressed) {
 			if ((checkCombat(*combat, &map[p->y][p->x]))) {
 				for (int i = 0; i < map[p->y][p->x].fights.size(); i++) {
-					for (Person* person : map[p->y][p->x].fights[i].allies) {
-						if (person == p) {
+					for (Person* ape : map[p->y][p->x].fights[i].allies) {
+						if (ape == p) {
 							map[p->y][p->x].fights.erase(map[p->y][p->x].fights.begin() + i);
 							combat = nullptr;
 						}
@@ -485,7 +485,7 @@ bool OnUserUpdate(float fElapsedTime) override
 
 	if(combat == nullptr && ((!NPC_TEST && (p->move != HERE) || (NPC_TEST && GetKey(olc::Key::SHIFT).bHeld)) || ((GetKey(olc::Key::ENTER).bPressed && (p->hp.val > 0 || NPC_TEST))))){
 		//Handle Player input:
-		Person* person;
+		Person* ape;
 		std::vector<Pair> jobs = {};
 		int cooked = 0;
 		int this_cook = 0;
@@ -591,10 +591,10 @@ bool OnUserUpdate(float fElapsedTime) override
 								}
 							}
 							for (int a = 0; a < map[y][x].people.size(); a++){
-								person = map[y][x].people[a];
-								if (person->hp.val <= 0 && !(person->combat)) {
-									if (person != p) {
-										if (person->sentient) {
+								ape = map[y][x].people[a];
+								if (ape->hp.val <= 0 && !(ape->combat)) {
+									if (ape != p) {
+										if (ape->sentient) {
 											avg_death_tick = avg_death_tick * death_counter + turn_counter;
 											death_counter++;
 											avg_death_tick /= (float)death_counter;
@@ -602,90 +602,90 @@ bool OnUserUpdate(float fElapsedTime) override
 										Death(&map[y][x], map[y][x].people[a]);
 									}
 								}
-								else if (person->acted != turn_counter) {
-									person->acted = turn_counter;
-									if (person->sentient) { //Collect debug info
+								else if (ape->acted != turn_counter) {
+									ape->acted = turn_counter;
+									if (ape->sentient) { //Collect debug info
 										bool found = false;
 										for (Pair& job : jobs) {
-											if (job.name == person->job) {
+											if (job.name == ape->job) {
 												job.value++;
 												found = true;
 												break;
 											}
 										}
 										if (!found) {
-											jobs.push_back(Pair(person->job, 1));
+											jobs.push_back(Pair(ape->job, 1));
 										}
 										ape_counter++;
 									}
-									if (person->eats) {
+									if (ape->eats) {
 										if (turn_counter % 3) {
-											person->state.thirst++;
+											ape->state.thirst++;
 											if (turn_counter % 6) {
-												person->state.hunger++;
+												ape->state.hunger++;
 											}
 										}
-										if (person->sentient) {
-											hunger += person->state.hunger;
+										if (ape->sentient) {
+											hunger += ape->state.hunger;
 										}
-										if (!person->combat) {
-											if (person->ap.val < person->ap.max) {
-												person->ap.val = person->ap.max;
+										if (!ape->combat) {
+											if (ape->ap.val < ape->ap.max) {
+												ape->ap.val = ape->ap.max;
 											}
-											if (!(person->state.hunger >= 100) && !(person->state.thirst >= 100)) {
-												if (person->hp.val < person->hp.max) {
-													person->hp.val++;
+											if (!(ape->state.hunger >= 100) && !(ape->state.thirst >= 100)) {
+												if (ape->hp.val < ape->hp.max) {
+													ape->hp.val++;
 												}
 											}
 											else {
-												person->hp.val--;
-												person->state.hunger = min(person->state.hunger, 100);
-												person->state.thirst = min(person->state.thirst, 100);
+												ape->hp.val--;
+												ape->state.hunger = min(ape->state.hunger, 100);
+												ape->state.thirst = min(ape->state.thirst, 100);
 											}
 										}
-										if (!person->dead && person->hp.val > 0) {
-											if (person->sp.val < person->sp.max) {
-												person->sp.val++;
+										if (!ape->dead && ape->hp.val > 0) {
+											if (ape->sp.val < ape->sp.max) {
+												ape->sp.val++;
 											}
 										}
 									}
 									logData = "";
-									if (person->sentient) {
+									if (ape->sentient) {
 										//measure income inequality in terms of distance from average gold.
-										for (Item it : person->inventory) {
+										for (Item it : ape->inventory) {
 											if (it.name != "null") {
 												food_held += items[it.i].hunger;
 											}
 										}
 									}
-									if (!person->combat) {
-										if (person != p) {
-											logData = AIController(person, map, p, this_cook);
+									if (!ape->combat) {
+										if (ape != p) {
+											logData = AIController(ape, map, p, this_cook);
 											cooked += this_cook;
 											if (NPC_TEST) {
 												logData = "";
 											}
 										}
-										else if (person->move != HERE || NPC_TEST) { //Control player during debug mode npc test player
-											logData = AIController(person, map, p, this_cook);
+										else if (ape->move != HERE || NPC_TEST) { //Control player during debug mode npc test player
+											logData = AIController(ape, map, p, this_cook);
 											cooked += this_cook;
 										}
-										if ((x == p->x && y == p->y) || person == p) {
+										if ((x == p->x && y == p->y) || ape == p) {
 											if (logData != "") {
 												if (!NPC_TEST) {
 													log.push_back(logData);
 												}
 												else if (log.size() < 2) {
-													log.push_back(to_str(person->acted) +" "+ logData);
+													log.push_back(to_str(ape->acted) +" "+ logData);
 												}
 												else {
-													log[1] = to_str(person->acted) +" "+ logData;
+													log[1] = to_str(ape->acted) +" "+ logData;
 												}
 											}
 										}
 									}
 								}
-								if (a < map[y][x].people.size() && map[y][x].people[a] != person) {
+								if (a < map[y][x].people.size() && map[y][x].people[a] != ape) {
 									a--;
 								}
 							}
@@ -861,8 +861,8 @@ return true;
 			else {
 				s = "*GREEN*Victory!*GREEN*";
 				for (int i = 0; i < map[p->y][p->x].fights.size(); i++) {
-					for (Person* person : map[p->y][p->x].fights[i].allies) {
-						if (person == p) {
+					for (Person* ape : map[p->y][p->x].fights[i].allies) {
+						if (ape == p) {
 							map[p->y][p->x].fights.erase(map[p->y][p->x].fights.begin() + i);
 							combat = nullptr;
 							return s;
@@ -997,14 +997,14 @@ std::string Parse(std::string input) {
 		s = "*RED*" + to_str(death_counter) + "*RED*";
 	}
 	else if (words[0] == "trade") {
-		for (Person* person : map[p->y][p->x].people) {
-			if (person != p) {
-				if (low(person->name) == word) {
-					if (person->sentient) {
+		for (Person* ape : map[p->y][p->x].people) {
+			if (ape != p) {
+				if (low(ape->name) == word) {
+					if (ape->sentient) {
 						trade = TradeHandler();
 						trade.active = true;
 						trade.p1 = p;
-						trade.p2 = person;
+						trade.p2 = ape;
 					}
 					else {
 						s = "*RED*You can't trade with that. *RED*";
@@ -1024,11 +1024,11 @@ std::string Parse(std::string input) {
 		topic = "inventory";
 	}
 	else if (words[0] == "attack") {
-		for (Person* person : map[p->y][p->x].people) {
-			if (person != p) {
-				if (low(person->name) == word) {
-					if (person->eats) {
-						startFight(p, person, map[p->y][p->x], IMPRISON);
+		for (Person* ape : map[p->y][p->x].people) {
+			if (ape != p) {
+				if (low(ape->name) == word) {
+					if (ape->eats) {
+						startFight(p, ape, map[p->y][p->x], IMPRISON);
 						topic = "combat";
 						combat = &map[p->y][p->x].fights.back();
 					}
@@ -1041,12 +1041,12 @@ std::string Parse(std::string input) {
 		}
 	}
 	else if (words[0] == "talk") {
-		for (Person* person : map[p->y][p->x].people) {
-			if (person != p) {
-				if (low(person->name) == word) {
-					if (person->sentient) {
+		for (Person* ape : map[p->y][p->x].people) {
+			if (ape != p) {
+				if (low(ape->name) == word) {
+					if (ape->sentient) {
 						talk.active = true;
-						talk.target = person;
+						talk.target = ape;
 						talk.you = p;
 						talk.page = 0;
 					}
@@ -1237,14 +1237,14 @@ void DrawCombat() {
 	int h = 18;
 
 	if (allies_selected) {
-		int person = combat->enemies.size();
-		if (reticle >= person) {
+		int ape = combat->enemies.size();
+		if (reticle >= ape) {
 			reticle = 0;
 		}
 	}
 	else {
-		int person = combat->enemies.size();
-		if (reticle >= person) {
+		int ape = combat->enemies.size();
+		if (reticle >= ape) {
 			reticle = 0;
 		}
 	}
@@ -1274,8 +1274,8 @@ void DrawCombat() {
 			}
 		}
 		std::string ally_name = name_color + combat->allies[i]->name + name_color;
-		for (int person : ally_targets) {
-			if (person == i) {
+		for (int ape : ally_targets) {
+			if (ape == i) {
 				ally_name = "*GREEN*[*GREEN*" + ally_name + "*GREEN*]*GREEN*";
 			}
 		}
@@ -1306,8 +1306,8 @@ void DrawCombat() {
 			}
 		}
 		std::string name = name_color + combat->enemies[i]->name + name_color;
-		for (int person : enemy_targets) {
-			if (person == i) {
+		for (int ape : enemy_targets) {
+			if (ape == i) {
 				name = "*ORANGE*[*ORANGE*" + name + "*ORANGE*]*ORANGE*";
 			}
 		}
@@ -1519,8 +1519,8 @@ void DrawMap(int x1, int y1, int w, int h, bool zoomed_in = true, bool center = 
 						olc::Pixel color = olc::WHITE;
 
 						int num_people = 0;
-						for (Person* person : map[y][x].people) {
-							if (person->eats) {
+						for (Person* ape : map[y][x].people) {
+							if (ape->eats) {
 								num_people++;
 							}
 						}
@@ -1802,12 +1802,12 @@ void LeftBar(Tile t, Person* p) {
 		leftUI[1]--;
 	}
 	for (int i = (leftUI[1] - 1) * 7; i < min(t.people.size(), (leftUI[1]) * 7); i++) {
-		Person* person = t.people[i];
-		if (person != p && person->eats) {
+		Person* ape = t.people[i];
+		if (ape != p && ape->eats) {
 			s += char('a' + counter++);
-			s += " " + relationName(person, p);
-			if (person->move != HERE) {
-				s += " > " + dirName(person->move);
+			s += " " + relationName(ape, p);
+			if (ape->move != HERE) {
+				s += " > " + dirName(ape->move);
 			}
 			s += "\n";
 		}
